@@ -1,0 +1,10 @@
+aksioma
+autentifikatsia
+edenica
+issledovanie
+otsutstvie
+razblokiruy
+shifrovanie
+start
+stop
+zablokiruy

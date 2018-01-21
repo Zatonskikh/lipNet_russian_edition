@@ -1,8 +1,8 @@
-from lipnet.lipreading.helpers import text_to_labels
-from lipnet.lipreading.videos import Video
-from lipnet.lipreading.aligns import Align
-from lipnet.helpers.threadsafe import threadsafe_generator
-from lipnet.helpers.list import get_list_safe
+from uir2.lipnet.lipreading.helpers import text_to_labels
+from uir2.lipnet.lipreading.videos import Video
+from uir2.lipnet.lipreading.aligns import Align
+from uir2.lipnet.helpers.threadsafe import threadsafe_generator
+from uir2.lipnet.helpers.list import get_list_safe
 from keras import backend as K
 import numpy as np
 import keras
@@ -90,7 +90,7 @@ class BasicGenerator(keras.callbacks.Callback):
             except AttributeError as err:
                 raise err
             except:
-                print "Error loading video: "+video_path
+                print "Error loading video: " + video_path
                 continue
             if K.image_data_format() == 'channels_first' and video.data.shape != (self.img_c,self.frames_n,self.img_w,self.img_h):
                 print "Video "+video_path+" has incorrect shape "+str(video.data.shape)+", must be "+str((self.img_c,self.frames_n,self.img_w,self.img_h))+""
@@ -116,8 +116,8 @@ class BasicGenerator(keras.callbacks.Callback):
                 self.train_list, self.val_list, self.align_hash = pickle.load(fp)
         else:
             print "\nEnumerating dataset list from disk..."
-            self.train_list = self.enumerate_videos(os.path.join(self.train_path, '*', '*'))
-            self.val_list   = self.enumerate_videos(os.path.join(self.val_path, '*', '*'))
+            self.train_list = self.enumerate_videos(os.path.join(self.train_path, '*'))
+            self.val_list   = self.enumerate_videos(os.path.join(self.val_path, '*'))
             self.align_hash = self.enumerate_align_hash(self.train_list + self.val_list)
             with open(self.get_cache_path(), 'wb') as fp:
                 pickle.dump((self.train_list, self.val_list, self.align_hash), fp)

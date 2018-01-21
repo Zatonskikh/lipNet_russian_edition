@@ -5,7 +5,7 @@ from scipy import ndimage
 from scipy.misc import imresize
 import skvideo.io
 import dlib
-from lipnet.lipreading.aligns import Align
+from uir2.lipnet.lipreading.aligns import Align
 
 class VideoAugmenter(object):
     @staticmethod
@@ -138,7 +138,10 @@ class Video(object):
         predictor = dlib.shape_predictor(self.face_predictor_path)
         mouth_frames = self.get_frames_mouth(detector, predictor, frames)
         self.face = np.array(frames)
-        self.mouth = np.array(mouth_frames)
+        try:
+            self.mouth = np.array(mouth_frames)
+        except ValueError:
+            self.mouth = np.array(50, 100)
         self.set_data(mouth_frames)
 
     def process_frames_mouth(self, frames):

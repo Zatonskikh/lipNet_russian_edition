@@ -1,5 +1,5 @@
 import numpy as np
-from lipnet.lipreading.videos import VideoAugmenter
+from uir2.lipnet.lipreading.videos import VideoAugmenter
 
 class Curriculum(object):
     def __init__(self, rules):

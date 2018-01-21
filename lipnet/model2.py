@@ -6,11 +6,21 @@ from keras.layers.recurrent import GRU
 from keras.layers.normalization import BatchNormalization
 from keras.layers import Input
 from keras.models import Model
-from lipnet.core.layers import CTC
+from keras.optimizers import Adam
+from uir2.lipnet.core.layers import CTC
 from keras import backend as K
 
+def set_weights_for_training(weight_path, img_c, img_w, img_h, frames_n, absolute_max_string_len, output_size):
+    lipnet = LipNet(img_c=img_c, img_w=img_w, img_h=img_h, frames_n=frames_n,
+                    absolute_max_string_len=absolute_max_string_len, output_size=output_size)
+
+    adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
+
+    lipnet.model.compile(loss={'ctc': lambda y_true, y_pred: y_pred}, optimizer=adam)
+    lipnet.model.load_weights(weight_path)
 
 class LipNet(object):
+
     def __init__(self, img_c=3, img_w=100, img_h=50, frames_n=75, absolute_max_string_len=32, output_size=28):
         self.img_c = img_c
         self.img_w = img_w
@@ -66,6 +76,7 @@ class LipNet(object):
         self.loss_out = CTC('ctc', [self.y_pred, self.labels, self.input_length, self.label_length])
 
         self.model = Model(inputs=[self.input_data, self.labels, self.input_length, self.label_length], outputs=self.loss_out)
+        # self.model.load_weights('/home/atticus/lipNet_impl/uir2/evaluation/models/unseen-weights178.h5')
 
     def summary(self):
         Model(inputs=self.input_data, outputs=self.y_pred).summary()

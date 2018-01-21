@@ -13,8 +13,7 @@ Example:
 
     Will make directory TARGET and process everything inside evaluation/samples/GRID/ that match pattern *.mpg.
 '''
-
-from lipnet.lipreading.videos import Video
+from uir2.lipnet.lipreading.videos import Video
 import os, fnmatch, sys, errno  
 from skimage import io
 
@@ -41,14 +40,25 @@ def find_files(directory, pattern):
                 yield filename
 
 for filepath in find_files(SOURCE_PATH, SOURCE_EXTS):
-    print "Processing: {}".format(filepath)
-    video = Video(vtype='face', face_predictor_path=FACE_PREDICTOR_PATH).from_video(filepath)
-
+    print ("Processing: {}".format(filepath))
+    if (os.path.isdir(filepath.split('.')[0])):
+        continue
+    # from skvideo import _FFMPEG_PATH, setFFmpegPath
+    # setFFmpegPath('/usr/bin/ffmpeg')
+    print(os.environ['PATH'])
+    try:
+        video = Video(vtype='face', face_predictor_path=FACE_PREDICTOR_PATH).from_video(filepath)
+    except Exception as e:
+        print("Error processing video {} as {}".format(filepath, str(e)))
+        continue
     filepath_wo_ext = os.path.splitext(filepath)[0]
     target_dir = os.path.join(TARGET_PATH, filepath_wo_ext)
     mkdir_p(target_dir)
 
     i = 0
-    for frame in video.mouth:
-    	io.imsave(os.path.join(target_dir, "mouth_{0:03d}.png".format(i)), frame)
-    	i += 1
+    try:
+        for frame in video.mouth:
+            io.imsave(os.path.join(target_dir, "mouth_{0:03d}.png".format(i)), frame)
+            i += 1
+    except:
+        continue
